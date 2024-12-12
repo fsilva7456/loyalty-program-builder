@@ -15,40 +15,40 @@ app.post('/api/analyze', async (req, res) => {
   const { companyData } = req.body;
   
   try {
-    const analysis = await generateFullAnalysis(companyData);
+    const analysis = await generateAnalysis(companyData);
     res.json(analysis);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-async function generateFullAnalysis(companyData) {
-  const sections = {
-    overview: `Create a comprehensive overview of a loyalty program for ${companyData.companyName}. Context: ${companyData.context}`,
+async function generateAnalysis(companyData) {
+  const prompts = {
+    overview: `Create a structured overview of a loyalty program for ${companyData.companyName}. Break down the response into clear sections for: Program Goals, Key Features, Target Audience, and Expected Outcomes. Context: ${companyData.context}`,
     
-    competitive: `Analyze the competitive landscape and existing loyalty programs in ${companyData.companyName}'s industry. Context: ${companyData.context}`,
+    competitive: `Analyze the competitive landscape for ${companyData.companyName}'s loyalty program. Structure the response into: Market Overview, Key Competitors Analysis, Industry Trends, and Differentiation Opportunities. Context: ${companyData.context}`,
     
-    mechanics: `Design detailed loyalty program mechanics for ${companyData.companyName}, including points structure, tiers, and rewards. Context: ${companyData.context}`,
+    mechanics: `Design the core mechanics for ${companyData.companyName}'s loyalty program. Include sections for: Points Structure, Reward Tiers, Earning Mechanisms, and Redemption Options. Make it specific to their industry. Context: ${companyData.context}`,
     
-    benefits: `Analyze potential business benefits and ROI for implementing this loyalty program at ${companyData.companyName}. Context: ${companyData.context}`,
+    benefits: `Outline the business benefits of implementing this loyalty program for ${companyData.companyName}. Structure into: Revenue Impact, Customer Retention Benefits, Data & Insights Value, and Brand Enhancement. Context: ${companyData.context}`,
     
-    implementation: `Create a detailed implementation plan for rolling out this loyalty program at ${companyData.companyName}. Context: ${companyData.context}`,
+    implementation: `Create a structured implementation plan for ${companyData.companyName}'s loyalty program. Include: Technical Requirements, Team Structure, Training Needs, and Launch Strategy. Context: ${companyData.context}`,
     
-    risks: `Analyze potential risks and mitigation strategies for implementing this loyalty program. Context: ${companyData.context}`,
+    risks: `Analyze potential risks for ${companyData.companyName}'s loyalty program. Cover: Technical Risks, Operational Risks, Market Risks, and Mitigation Strategies. Context: ${companyData.context}`,
     
-    metrics: `Define key performance indicators (KPIs) and success metrics for the loyalty program. Context: ${companyData.context}`,
+    metrics: `Define key performance indicators for ${companyData.companyName}'s loyalty program. Include: Engagement Metrics, Financial Metrics, Customer Satisfaction Metrics, and Program Health Metrics. Context: ${companyData.context}`,
     
-    timeline: `Create a proposed timeline for implementing the loyalty program. Context: ${companyData.context}`
+    timeline: `Create a phased timeline for implementing ${companyData.companyName}'s loyalty program. Break down into: Planning Phase, Development Phase, Testing Phase, and Launch Phase with specific milestones. Context: ${companyData.context}`
   };
 
   const results = {};
 
-  for (const [section, prompt] of Object.entries(sections)) {
+  for (const [section, prompt] of Object.entries(prompts)) {
     const response = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [{
         role: "system",
-        content: "You are an expert in loyalty program design and implementation. Provide detailed, actionable insights."
+        content: "You are an expert in loyalty program design. Provide detailed, structured responses that can be easily displayed in a card-based UI. Use clear headings and bullet points. Keep each section focused and actionable."
       }, {
         role: "user",
         content: prompt
