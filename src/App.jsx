@@ -1,37 +1,19 @@
 import React from 'react';
-import AppLayout from './components/Layout/AppLayout';
-import Dashboard from './components/Dashboard/Dashboard';
-import ProgramBuilder from './components/ProgramBuilder/ProgramBuilder';
-import TemplatesGallery from './components/Templates/TemplatesGallery';
-import AnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
-import Settings from './components/Settings/Settings';
+import { Card } from './components/ui/card';
 
-const App = () => {
-  // In a real app, you'd use react-router for navigation
-  const [currentPage, setCurrentPage] = React.useState('dashboard');
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'builder':
-        return <ProgramBuilder />;
-      case 'templates':
-        return <TemplatesGallery />;
-      case 'analytics':
-        return <AnalyticsDashboard />;
-      case 'settings':
-        return <Settings />;
-      default:
-        return <Dashboard />;
-    }
-  };
-
+function App() {
   return (
-    <AppLayout onNavigate={setCurrentPage}>
-      {renderPage()}
-    </AppLayout>
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Loyalty Program Builder</h1>
+        
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">Welcome to Your Dashboard</h2>
+          <p className="text-gray-600">Getting started with your loyalty program...</p>
+        </div>
+      </div>
+    </div>
   );
-};
+}
 
 export default App;
