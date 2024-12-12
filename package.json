@@ -2,7 +2,7 @@
   "name": "loyalty-program-builder",
   "private": true,
   "version": "0.0.0",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -15,8 +15,7 @@
     "lucide-react": "^0.309.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "recharts": "^2.10.3",
-    "tailwindcss-animate": "^1.0.7"
+    "recharts": "^2.10.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
