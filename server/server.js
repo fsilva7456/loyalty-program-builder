@@ -15,40 +15,50 @@ app.post('/api/analyze', async (req, res) => {
   const { companyData } = req.body;
   
   try {
-    const analysis = await generateAnalysis(companyData);
+    const analysis = await generateFullAnalysis(companyData);
     res.json(analysis);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-async function generateAnalysis(companyData) {
-  const competitivePrompt = `Analyze the loyalty program landscape for ${companyData.industry} industry, focusing on competitors: ${companyData.competitors}. Include market trends and opportunities.`;
-  
-  const mechanicsPrompt = `Design a loyalty program for ${companyData.companyName} in the ${companyData.industry} industry with annual revenue of ${companyData.annualRevenue}. Include point structure, tiers, and redemption mechanics.`;
-  
-  const benefitsPrompt = `Analyze potential benefits and ROI for implementing this loyalty program at ${companyData.companyName}, considering their customer base of ${companyData.customerBase}.`;
-
-  const [competitiveAnalysis, mechanics, benefits] = await Promise.all([
-    openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [{ role: "user", content: competitivePrompt }]
-    }),
-    openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [{ role: "user", content: mechanicsPrompt }]
-    }),
-    openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [{ role: "user", content: benefitsPrompt }]
-    })
-  ]);
-
-  return {
-    competitiveAnalysis: competitiveAnalysis.choices[0].message.content,
-    mechanics: mechanics.choices[0].message.content,
-    benefits: benefits.choices[0].message.content
+async function generateFullAnalysis(companyData) {
+  const sections = {
+    overview: `Create a comprehensive overview of a loyalty program for ${companyData.companyName}. Context: ${companyData.context}`,
+    
+    competitive: `Analyze the competitive landscape and existing loyalty programs in ${companyData.companyName}'s industry. Context: ${companyData.context}`,
+    
+    mechanics: `Design detailed loyalty program mechanics for ${companyData.companyName}, including points structure, tiers, and rewards. Context: ${companyData.context}`,
+    
+    benefits: `Analyze potential business benefits and ROI for implementing this loyalty program at ${companyData.companyName}. Context: ${companyData.context}`,
+    
+    implementation: `Create a detailed implementation plan for rolling out this loyalty program at ${companyData.companyName}. Context: ${companyData.context}`,
+    
+    risks: `Analyze potential risks and mitigation strategies for implementing this loyalty program. Context: ${companyData.context}`,
+    
+    metrics: `Define key performance indicators (KPIs) and success metrics for the loyalty program. Context: ${companyData.context}`,
+    
+    timeline: `Create a proposed timeline for implementing the loyalty program. Context: ${companyData.context}`
   };
+
+  const results = {};
+
+  for (const [section, prompt] of Object.entries(sections)) {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [{
+        role: "system",
+        content: "You are an expert in loyalty program design and implementation. Provide detailed, actionable insights."
+      }, {
+        role: "user",
+        content: prompt
+      }]
+    });
+    
+    results[section] = response.choices[0].message.content;
+  }
+
+  return results;
 }
 
 const PORT = process.env.PORT || 3001;
