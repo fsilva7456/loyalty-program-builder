@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ProgramSection from './ProgramSection';
 
 const LoyaltyBuilder = () => {
   const [step, setStep] = useState(1);
@@ -8,6 +9,18 @@ const LoyaltyBuilder = () => {
     context: ''
   });
   const [analysis, setAnalysis] = useState(null);
+  const [activeSection, setActiveSection] = useState('overview');
+
+  const sections = [
+    { id: 'overview', title: 'Program Overview' },
+    { id: 'competitive', title: 'Competitive Analysis' },
+    { id: 'mechanics', title: 'Program Mechanics' },
+    { id: 'benefits', title: 'Business Benefits' },
+    { id: 'implementation', title: 'Implementation Plan' },
+    { id: 'risks', title: 'Risk Analysis' },
+    { id: 'metrics', title: 'KPIs & Metrics' },
+    { id: 'timeline', title: 'Timeline' }
+  ];
 
   const handleInputChange = (e) => {
     setFormData({
@@ -37,13 +50,14 @@ const LoyaltyBuilder = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8 text-blue-900">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold text-center mb-8 text-blue-900">
           AI Loyalty Program Builder
         </h1>
         
         {step === 1 && (
-          <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
+          <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
+            <h2 className="text-2xl font-semibold mb-6 text-gray-800">Company Information</h2>
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-700">
@@ -55,7 +69,7 @@ const LoyaltyBuilder = () => {
                   value={formData.companyName}
                   onChange={handleInputChange}
                   placeholder="e.g., Acme Corporation"
-                  className="w-full p-2 border rounded"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               <div>
@@ -67,13 +81,14 @@ const LoyaltyBuilder = () => {
                   value={formData.context}
                   onChange={handleInputChange}
                   placeholder="Tell us about your industry, customers, goals, or any specific requirements..."
-                  className="w-full h-32 p-2 border rounded"
+                  className="w-full h-32 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               <button
                 onClick={handleGenerate}
                 disabled={loading}
-                className={`w-full p-2 rounded text-white ${loading ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-600'}`}
+                className={`w-full p-3 rounded-lg text-white font-medium transition-colors
+                  ${loading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
               >
                 {loading ? 'Generating Program...' : 'Design Loyalty Program'}
               </button>
@@ -82,18 +97,38 @@ const LoyaltyBuilder = () => {
         )}
 
         {step === 2 && analysis && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-semibold mb-4">Your Loyalty Program</h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-xl font-medium mb-2">Program Overview</h3>
-                <p className="text-gray-700">{analysis.overview}</p>
+          <div className="grid grid-cols-12 gap-6">
+            <div className="col-span-3">
+              <div className="bg-white rounded-lg shadow-lg p-4 sticky top-8">
+                <nav className="space-y-2">
+                  {sections.map((section) => (
+                    <button
+                      key={section.id}
+                      onClick={() => setActiveSection(section.id)}
+                      className={`w-full text-left px-4 py-3 rounded-lg transition-colors
+                        ${activeSection === section.id
+                          ? 'bg-blue-50 text-blue-700 font-medium'
+                          : 'text-gray-600 hover:bg-gray-50'}`}
+                    >
+                      {section.title}
+                    </button>
+                  ))}
+                </nav>
               </div>
-              <div>
-                <h3 className="text-xl font-medium mb-2">Competitive Analysis</h3>
-                <p className="text-gray-700">{analysis.competitive}</p>
+            </div>
+
+            <div className="col-span-9">
+              <div className="space-y-6">
+                {sections
+                  .filter(section => section.id === activeSection)
+                  .map(section => (
+                    <ProgramSection
+                      key={section.id}
+                      title={section.title}
+                      content={analysis[section.id]}
+                    />
+                  ))}
               </div>
-              {/* Add more sections as needed */}
             </div>
           </div>
         )}
